@@ -54,7 +54,7 @@ client.connect(() => {
   app.post("/apartment", (req, res) => {
     const {ownerEmail, title, location, bedroom, bathroom, price, img} = req.body;
     if(ownerEmail && title && location && bedroom && bathroom && price && img){
-      apartmentsCollection.insertOne({title, location, bedroom, bathroom, price, img})
+      apartmentsCollection.insertOne({ownerEmail, title, location, bedroom, bathroom, price, img})
       .then(()=>{
         res.send("Post API for Apartment");
       })
@@ -87,7 +87,7 @@ client.connect(() => {
   // Request for Rent
   app.post("/booking-request", (req, res) => {
     const {name, email, phone, msg, ownerEmail} = req.body;
-    if(name && email && phone && msg){
+    if(name && email && phone && msg && ownerEmail){
       bookingsCollection.insertOne({name: name, email: email, phone: phone, msg: msg, ownerEmail: ownerEmail, status: 0})
       .then(() =>{
         res.send("success");
