@@ -43,9 +43,13 @@ client.connect(() => {
 
   // Post Apartment
   app.post("/apartment", (req, res) => {
-    apartmentsCollection.insertOne({name: "test"}).then(()=>{
-      res.send("Post API for Apartment");
-    })
+    const {title, location, bedroom, bathroom, price, img} = req.body;
+    if(title && location && bedroom && bathroom && price && img){
+      apartmentsCollection.insertOne({title, location, bedroom, bathroom, price, img})
+      .then(()=>{
+        res.send("Post API for Apartment");
+      })
+    }
   })
 
   // Get Bookings
