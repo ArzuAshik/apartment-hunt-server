@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 // Root API
 app.get("/", (req, res) => {
-  res.send("Welcome t server");
+  res.send("Welcome to server");
 });
 
 // MongoDB Connect
@@ -31,6 +31,10 @@ client.connect(() => {
   .db(process.env.DB_NAME)
   .collection("apartments");
 
+  const bookingsCollection = client
+  .db(process.env.DB_NAME)
+  .collection("bookings");
+
   // Get Apartment
   app.get("/apartment", (req, res) => {
     const id = req.query.id;
@@ -43,23 +47,35 @@ client.connect(() => {
 
   // Post Apartment
   app.post("/apartment", (req, res) => {
-    const {title, location, bedroom, bathroom, price, img} = req.body;
-    if(title && location && bedroom && bathroom && price && img){
+    const {ownerEmail, title, location, bedroom, bathroom, price, img} = req.body;
+    if(ownerEmail && title && location && bedroom && bathroom && price && img){
       apartmentsCollection.insertOne({title, location, bedroom, bathroom, price, img})
       .then(()=>{
         res.send("Post API for Apartment");
       })
+    }else{
+      res.send("err");
     }
   })
 
   // Get Bookings
-  app.get("/bookings", (req, res) => {
-    res.send({msg: "All Bookings"})
+  app.post("/bookings", (req, res) => {
+    const ownerEmail = req.body.ownerEmail;
+    bookingsCollection.find({ownerEmail})
+    .toArray((err, docs) => {
+      res.send(docs)
+    })
   })
     
-  // Get Single User Bookings
-  app.get("/booking", (req, res) => {
-    res.send("All Bookings")
+  // Request for Rent
+  app.post("/booking-request", (req, res) => {
+    const {name, email, phone, msg, ownerEmail} = req.body;
+    if(name && email && phone && msg){
+      bookingsCollection.insertOne({name: name, email: email, phone: phone, msg: msg, ownerEmail: ownerEmail, status: 0})
+      .then(() =>{
+        res.send("success");
+      })
+    }
   })
     
   // client connect close
