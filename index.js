@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 // Root API
 app.get("/", (req, res) => {
-  res.send("Welcome to server");
+  res.send("Welcome to apartment Hunt server");
 });
 
 // MongoDB Connect
@@ -26,8 +26,7 @@ const client = new MongoClient(uri, {
 
 client.connect(() => {
   console.log("connected");
-
-  // collections
+  // All collections
   const apartmentsCollection = client
   .db(process.env.DB_NAME)
   .collection("apartments");
@@ -36,6 +35,11 @@ client.connect(() => {
   .db(process.env.DB_NAME)
   .collection("bookings");
 
+  //   collections end
+  // ------------------------------------------------
+  
+
+  //==================== All API =========================
   // Get Apartment
   app.get("/apartment", (req, res) => {
     const id = req.query.id;
@@ -43,20 +47,11 @@ client.connect(() => {
     apartmentsCollection.find(search)
     .toArray((err, docs) => {
       res.send(docs)
-
-  // Get Apartment
-  app.get("/apartment", (req, res) => {
-    apartmentsCollection.find({})
-    .toArray((err, docs) => {
-      console.log(docs);
-      res.send('ok')
-
     })
   })
 
   // Post Apartment
   app.post("/apartment", (req, res) => {
-
     const {ownerEmail, title, location, bedroom, bathroom, price, img} = req.body;
     if(ownerEmail && title && location && bedroom && bathroom && price && img){
       apartmentsCollection.insertOne({title, location, bedroom, bathroom, price, img})
@@ -98,22 +93,10 @@ client.connect(() => {
         res.send("success");
       })
     }
-
-    res.send("Post API for Apartment");
-  })
-
-  // Get Bookings
-  app.get("/bookings", (req, res) => {
-    res.send({msg: "All Bookings"})
   })
     
-  // Get Single User Bookings
-  app.get("/booking", (req, res) => {
-    res.send("All Bookings")
-
-  })
-    
-  // client connect close
+  //==================== All API End =====================
+  // ------------------------------------------------
 });
 
 
@@ -121,9 +104,4 @@ client.connect(() => {
 const port = 4000;
 app.listen(process.env.PORT || port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
-
 });
-
-});
-  
-
