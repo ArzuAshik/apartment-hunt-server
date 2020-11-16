@@ -2,18 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const ObjectID = require("mongodb").ObjectID;
+const app = express();
 
 const MongoClient = require("mongodb").MongoClient;
 require("dotenv").config();
-
-const app = express();
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-const port = 4000;
 
 // Root API
 app.get("/", (req, res) => {
@@ -26,51 +23,44 @@ const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-client.connect((err) => {
-    console.log("dbConnected");
 
-    // collections
-    const apartmentsCollection = client
-      .db(process.env.DB_NAME)
-      .collection("apartments");
+client.connect(() => {
+  // collections
+  const apartmentsCollection = client
+  .db(process.env.DB_NAME)
+  .collection("apartments");
 
-    //   collections end
-    // ------------------------------------------------
-  
-    //==================== All API =========================
-    // Get Apartment
-    app.get("/apartment", (req, res) => {
-        const id = req.query.id;
-        console.log(id);
-        res.send(id);
+  // Get Apartment
+  app.get("/apartment", (req, res) => {
+    apartmentsCollection.find({})
+    .toArray((err, docs) => {
+      console.log(docs);
+      res.send('ok')
     })
+  })
 
-    // Post Apartment
-    app.post("/apartment", (req, res) => {
-        res.send("Post API for Apartment");
-    })
+  // Post Apartment
+  app.post("/apartment", (req, res) => {
+    res.send("Post API for Apartment");
+  })
 
-    // Get Bookings
-    app.get("/bookings", (req, res) => {
-        res.send({msg: "All Bookings"})
-    })
+  // Get Bookings
+  app.get("/bookings", (req, res) => {
+    res.send({msg: "All Bookings"})
+  })
     
-    // Get Single User Bookings
-    app.get("/booking", (req, res) => {
-        res.send("All Bookings")
-    })
+  // Get Single User Bookings
+  app.get("/booking", (req, res) => {
+    res.send("All Bookings")
+  })
     
-
-
-
-    //==================== All API End =====================
-    // ------------------------------------------------
-    // client connect close
-  });
+  // client connect close
+});
 
 
 // Listening Request
+const port = 4000;
 app.listen(process.env.PORT || port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
-  });
+  console.log(`Example app listening at http://localhost:${port}`);
+});
   
