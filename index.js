@@ -66,6 +66,18 @@ client.connect(() => {
       res.send(docs)
     })
   })
+
+  //update Order Status
+  app.patch("/bookings", (req, res) => {
+    bookingsCollection
+      .updateOne(
+        { _id: ObjectID(req.body.id) },
+        { $set: { status: parseInt(req.body.status) } }
+      )
+      .then((result) => {
+        res.send(result);
+      });
+  });
     
   // Request for Rent
   app.post("/booking-request", (req, res) => {
