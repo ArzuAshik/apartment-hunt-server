@@ -45,8 +45,8 @@ client.connect(() => {
     const id = req.query.id;
     const search = id ? { _id: ObjectID(id) } : {};
     apartmentsCollection.find(search)
-    .toArray((err, docs) => {
-      res.send(docs)
+    .toArray((err, apartments) => {
+      res.send(apartments)
     })
   })
 
@@ -56,7 +56,7 @@ client.connect(() => {
     if(ownerEmail && title && location && bedroom && bathroom && price && img){
       apartmentsCollection.insertOne({ownerEmail, title, location, bedroom, bathroom, price, img})
       .then(()=>{
-        res.send("Post API for Apartment");
+        res.send("success");
       })
     }else{
       res.send("err");
@@ -86,13 +86,23 @@ client.connect(() => {
     
   // Request for Rent
   app.post("/booking-request", (req, res) => {
-    const {name, email, phone, msg, ownerEmail} = req.body;
-    if(name && email && phone && msg && ownerEmail){
-      bookingsCollection.insertOne({name: name, email: email, phone: phone, msg: msg, ownerEmail: ownerEmail, status: 0})
+    const {name, email, phone, msg, ownerEmail, houseName, price, houseId} = req.body;
+    if(name && email && phone && msg && ownerEmail && houseName && price && houseId){
+      bookingsCollection.insertOne({name: name, email: email, phone: phone, msg: msg, ownerEmail: ownerEmail, houseName: houseName, price: price, houseId: houseId, status: 0})
       .then(() =>{
         res.send("success");
       })
+    }else{
+      res.send("some data is missing");
     }
+  })
+
+  // Get My Bookings
+  app.post("/my-bookings", (req, res) => {
+    const {email} = req.body;
+    bookingsCollection.find({email: email}).toArray((err, bookings) =>{
+      res.send(bookings);
+    })
   })
     
   //==================== All API End =====================
